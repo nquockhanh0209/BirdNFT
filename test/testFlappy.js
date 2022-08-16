@@ -37,36 +37,44 @@ describe("NFT", function () {
     console.log(await birdNFT.NFTbalance([owner.address, client1.address],[0,0]));
     //transfer
     await marketplace.listingNFT(0, 10);
-    // let signature = await owner._signTypedData(
-    //   {
-    //     name: "setPermit",
-    //     version: "1",
-    //     chainId: 31337,
-    //     verifyingContract: nft1155.address,
-    //   },
-    //   {
-    //     Permit: [
-    //       { name: "owner", type: "address" },
-    //       { name: "spender", type: "address" },
-    //       { name: "tokenId", type: "uint256" },
-    //       { name: "deadline", type: "uint256" },
-    //       { name: "nonce", type: "uint256" },
-    //     ],
-    //   },
-    //   {
-    //     owner: owner.address,
-    //     spender: nft1155.address,
-    //     tokenId: 0,
-    //     deadline: 100000000000,
-    //     nonce: 0,
-    //   }
-    // );
-    // signature = signature.substring(2);
-    // const r = "0x" + signature.substring(0, 64);
-    // const s = "0x" + signature.substring(64, 128);
-    // const v = parseInt(signature.substring(128, 130), 16);
-    // console.log(owner.address," next ", client1.address);
-    await marketplace.buyNFT(client1.address, owner.address, 0);
+    let signature = await owner._signTypedData(
+      {
+        name: "permission",
+        version: "1",
+        chainId: 31337,
+        verifyingContract: birdNFT.address,
+      },
+      {
+        Permit: [
+          { name: "owner", type: "address" },
+          { name: "spender", type: "address" },
+          { name: "tokenId", type: "uint256" },
+          { name: "deadline", type: "uint256" },
+          { name: "nonce", type: "uint256" },
+        ],
+      },
+      {
+        owner: owner.address,
+        spender: birdNFT.address,
+        tokenId: 0,
+        deadline: 100000000000,
+        nonce: 0,
+      }
+    );
+    signature = signature.substring(2);
+    const r = "0x" + signature.substring(0, 64);
+    const s = "0x" + signature.substring(64, 128);
+    const v = parseInt(signature.substring(128, 130), 16);
+    await marketplace.buyNFT(
+      client1.address,
+      owner.address,
+      0,
+      100000000000,
+      0,
+      v,
+      r,
+      s
+      )
     
     console.log(await birdNFT.NFTbalance([owner.address, client1.address],[0,0]));
     console.log(await token.balanceOf(owner.address));

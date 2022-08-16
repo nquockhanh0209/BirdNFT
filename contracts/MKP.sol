@@ -37,7 +37,12 @@ contract Marketplace{
     function buyNFT(
         address buyer, 
         address seller, 
-        uint256 tokenId
+        uint256 tokenId,
+        uint256 deadline, 
+        uint256 nonce, 
+        uint8 v, 
+        bytes32 r, 
+        bytes32 s
         ) external returns(bool){
         require(listed[tokenId],"NFT not listed");
         uint256[] memory id = new uint256[](1);
@@ -47,8 +52,8 @@ contract Marketplace{
 
         require(ISavvyCoin(SVC).transferFrom(buyer, seller, IdstoPrice[tokenId]),"insufficient balances for buy");
         
-        //require(INFT_1155(FlappyNFT).transferWithPermission(seller, buyer, tokenId, 1, deadline, nonce, v, r, s),"transfer NFT fail");
-        require(IBirdNFT(FlappyNFT).transferBatch1155NFT(seller, buyer, id, amount),"transfer NFT fail");
+        require(IBirdNFT(FlappyNFT).transferWithPermission(seller, buyer, tokenId, deadline, nonce, v, r, s),"transfer NFT fail");
+        //require(IBirdNFT(FlappyNFT).transferBatch1155NFT(seller, buyer, id, amount),"transfer NFT fail");
         return true;
     }
 

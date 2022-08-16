@@ -17,11 +17,24 @@ contract BirdNFT is ERC1155, ERC1155URIStorage, IBirdNFT{
     mapping(uint256 => uint256) public tokenSupply;
     mapping(uint256 => bool) private uniqueNFT;
     address public owner;
-   
+    bytes32 public immutable DOMAIN_SEPARATOR;
     constructor(string memory NFT_URI, address _owner) ERC1155(NFT_URI) {
         owner = _owner;
-       
-        
+        uint256 chainId;
+        assembly {
+            chainId := chainid()
+        }
+        DOMAIN_SEPARATOR = keccak256(
+            abi.encode(
+                keccak256(
+                    "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
+                ),
+                keccak256(bytes("permission")),
+                keccak256(bytes("1")),
+                31337,
+                address(this)
+            )
+        );
     }
     modifier OnlyOwner{
         require(msg.sender == owner);
@@ -32,7 +45,6 @@ contract BirdNFT is ERC1155, ERC1155URIStorage, IBirdNFT{
         string memory tokenURI,
         uint256 idsAmount,
         uint256[] memory amount
-        
     ) external OnlyOwner {
         //the number of ids must equal to amount length
         require(idsAmount == amount.length, "1234");
@@ -47,7 +59,8 @@ contract BirdNFT is ERC1155, ERC1155URIStorage, IBirdNFT{
         _mintBatch(creator, newIdsArray, amount, "");
         for (uint i = 0; i < idsAmount; i++) {
             _setURI(newIdsArray[i], tokenURI);
-           
+          
+            owner_balances[newIdsArray[i]][creator] = amount[i];
         }
         
     }
@@ -84,70 +97,68 @@ contract BirdNFT is ERC1155, ERC1155URIStorage, IBirdNFT{
     {
         return balanceOfBatch(account, Ids);
     }
-    //  function permit(
-    //     address owner,
-    //     address spender,
-    //     uint256 tokenId,
-    //     uint256 deadline,
-    //     uint256 nonce,
-    //     uint8 v,
-    //     bytes32 r,
-    //     bytes32 s
-    // ) public returns (bool) {
-    //     bytes32 hashStruct = keccak256(
-    //         abi.encode(
-    //             keccak256(
-    //                 "Permit(address owner,address spender,uint256 tokenId,uint256 deadline,uint256 nonce)"
-    //             ),
-    //             owner,
-    //             spender,
-    //             tokenId,
-    //             deadline,
-    //             nonce
-    //         )
-    //     );
+     function permit(
+        address owner,
+        address spender,
+        uint256 tokenId,
+        uint256 deadline,
+        uint256 nonce,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) public returns (bool) {
+        bytes32 hashStruct = keccak256(
+            abi.encode(
+                keccak256(
+                    "Permit(address owner,address spender,uint256 tokenId,uint256 deadline,uint256 nonce)"
+                ),
+                owner,
+                spender,
+                tokenId,
+                deadline,
+                nonce
+            )
+        );
 
-    //     bytes32 EIP721hash = keccak256(
-    //         abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR, hashStruct)
-    //     );
-    //     console.log("recover",ecrecover(EIP721hash, v, r, s));
-    //     require(owner != address(0), "invalid address");
-    //     require(owner == ecrecover(EIP721hash, v, r, s), "invalid owner");
-    //     require(deadline == 0 || deadline >= block.timestamp, "permit expired");
-    //     require(nonce == nonces[owner]++, "Invalid nonce");
+        bytes32 EIP721hash = keccak256(
+            abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR, hashStruct)
+        );
+        console.log("recover",ecrecover(EIP721hash, v, r, s));
+        require(owner != address(0), "invalid address");
+        require(owner == ecrecover(EIP721hash, v, r, s), "invalid owner");
+        require(deadline == 0 || deadline >= block.timestamp, "permit expired");
+        require(nonce == nonces[owner]++, "Invalid nonce");
         
-    //     approval[owner][spender] = tokenId;
-    //     return true;
-    // }
-    // function transferWithPermission(
-    //     address from,
-    //     address to,
-    //     uint256 tokenId,
-    //     uint256 amount,
-    //     uint256 deadline,
-    //     uint256 nonce,
-    //     uint8 v,
-    //     bytes32 r,
-    //     bytes32 s
-    // ) public virtual override returns(bool){
-    //      require(
-    //         permit(from, msg.sender, tokenId, deadline, nonce, v, r, s),
-    //         "not permitted"
-    //     );
+        approval[owner][spender] = tokenId;
+        return true;
+    }
+    function transferWithPermission(
+        address from,
+        address to,
+        uint256 tokenId,
+        uint256 deadline,
+        uint256 nonce,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) public virtual override returns(bool){
+         require(
+            permit(from, address(this), tokenId, deadline, nonce, v, r, s),
+            "not permitted"
+        );
         
-    //     uint256[] memory id = new uint256[](1);
-    //     id[0] = tokenId;
-    //     uint256[] memory amount = new uint256[](1);
-    //     amount[0] = 1;
-    //     _safeBatchTransferFrom(from, to, id, amount, "");
-    //     return true;
-    // }
-     function approveAll1155NFT(
+        uint256[] memory id = new uint256[](1);
+        id[0] = tokenId;
+        uint256[] memory amount = new uint256[](1);
+        amount[0] = 1;
+        _safeBatchTransferFrom(from, to, id, amount, "");
+        return true;
+    }
+    function approveAll1155NFT(
         address owner,
         address operator,
         bool approved
     ) public virtual override {
         _setApprovalForAll(owner, operator, approved);
     }
-
 }
