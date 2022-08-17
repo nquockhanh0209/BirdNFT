@@ -54,7 +54,7 @@ async function main() {
     const r = "0x" + signature.substring(0, 64);
     const s = "0x" + signature.substring(64, 128);
     const v = parseInt(signature.substring(128, 130), 16);
-    console.log(owner.address," next ", client1.address);
+ 
     await marketplace.buyNFT(
       client1.address,
       owner.address,
@@ -65,9 +65,43 @@ async function main() {
       r,
       s
       )
-
+      const types = JSON.stringlify({
+  types: {
+      EIP712Domain: [
+        { name: "name", type: "string" },
+        { name: "version", type: "string" },
+        { name: "chainId", type: "uint256" },
+        { name: "verifyingContract", type: "address" },
+      ],
+     
+        Permit: [
+          { name: "owner", type: "address" },
+          { name: "spender", type: "address" },
+          { name: "tokenId", type: "uint256" },
+          { name: "deadline", type: "uint256" },
+          { name: "nonce", type: "uint256" },
+        ],
+    },
+    //make sure to replace verifyingContract with address of deployed contract
+    primaryType: "permit",
+    domain: {
+        name: "permission",
+        version: "1",
+        chainId: 31337,
+        verifyingContract: nft1155.address,
+      },
+    message: {
+       owner: owner.address,
+        spender: nft1155.address,
+        tokenId: 0,
+        deadline: 100000000000,
+        nonce: 0,
+    },
+  })
+  console.log(types);
 }
 
+    
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
 main().catch((error) => {

@@ -58,7 +58,7 @@ contract Marketplace{
     }
 
     function listingNFT(uint256 tokenId, uint price) external{
-        IBirdNFT(FlappyNFT).approveAll1155NFT(msg.sender, address(this), true);
+        
         IdstoPrice[tokenId] = price;
         updateListing(tokenId, true);
         emit Listing(tokenId,price, true);
@@ -67,7 +67,7 @@ contract Marketplace{
         return IdstoPrice[tokenIds];
     }
     function cancelListing(uint256 tokenId) external {
-        IBirdNFT(FlappyNFT).approveAll1155NFT(msg.sender, address(this), false);
+       
         updateListing(tokenId, false);
         emit CancelListing(tokenId,false);
     }
