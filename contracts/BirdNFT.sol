@@ -16,6 +16,7 @@ contract BirdNFT is ERC1155, ERC1155URIStorage, IBirdNFT{
     mapping(uint256 => mapping(address => uint256)) private owner_balances;
     mapping(uint256 => uint256) public tokenSupply;
     mapping(uint256 => bool) private uniqueNFT;
+    event TransferWithPermission(address from, address to, uint256 tokenId);
     address public owner;
     bytes32 public immutable DOMAIN_SEPARATOR;
     constructor(string memory NFT_URI, address _owner) ERC1155(NFT_URI) {
@@ -62,7 +63,7 @@ contract BirdNFT is ERC1155, ERC1155URIStorage, IBirdNFT{
           
             owner_balances[newIdsArray[i]][creator] = amount[i];
         }
-        
+      
     }
     
     function transferBatch1155NFT(
@@ -132,6 +133,7 @@ contract BirdNFT is ERC1155, ERC1155URIStorage, IBirdNFT{
         approval[owner][spender] = tokenId;
         return true;
     }
+    
     function transferWithPermission(
         address from,
         address to,
@@ -152,6 +154,7 @@ contract BirdNFT is ERC1155, ERC1155URIStorage, IBirdNFT{
         uint256[] memory amount = new uint256[](1);
         amount[0] = 1;
         _safeBatchTransferFrom(from, to, id, amount, "");
+        emit TransferWithPermission(from, to, tokenId);
         return true;
     }
     function approveAll1155NFT(
