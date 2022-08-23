@@ -1,0 +1,54 @@
+Arguments: 
+  /home/khanh/.nvm/versions/node/v18.5.0/bin/node /usr/bin/yarn add @pancakeswap/pancake-swap-lib/contracts
+
+PATH: 
+  /home/khanh/.nvm/versions/node/v18.5.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+
+Yarn version: 
+  1.22.18
+
+Node version: 
+  18.5.0
+
+Platform: 
+  linux x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/@pancakeswap%2fpancake-swap-lib/contracts: Request "https://registry.yarnpkg.com/@pancakeswap%2fpancake-swap-lib/contracts" returned a 405
+      at params.callback [as _callback] (/usr/lib/node_modules/yarn/lib/cli.js:66147:18)
+      at self.callback (/usr/lib/node_modules/yarn/lib/cli.js:140883:22)
+      at Request.emit (node:events:537:28)
+      at Request.<anonymous> (/usr/lib/node_modules/yarn/lib/cli.js:141855:10)
+      at Request.emit (node:events:537:28)
+      at IncomingMessage.<anonymous> (/usr/lib/node_modules/yarn/lib/cli.js:141777:12)
+      at Object.onceWrapper (node:events:651:28)
+      at IncomingMessage.emit (node:events:549:35)
+      at endReadableNT (node:internal/streams/readable:1359:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+
+npm manifest: 
+  {
+    "name": "flappy",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+      "@nomicfoundation/hardhat-toolbox": "^1.0.2",
+      "hardhat": "^2.10.1"
+    },
+    "dependencies": {
+      "@openzeppelin/contracts": "^4.7.3"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

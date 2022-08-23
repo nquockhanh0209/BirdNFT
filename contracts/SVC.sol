@@ -25,7 +25,7 @@ library SafeMath {
       return c;
     }
 }
-contract ERC20Basic is IERC20 {
+contract SVCToken is IERC20 {
 
     string public constant name = "ERC20Basic";
     string public constant symbol = "BSC";
@@ -45,8 +45,8 @@ contract ERC20Basic is IERC20 {
     using SafeMath for uint256;
 
 
-   constructor(uint256 total) public {  
-	totalSupply_ = total;
+   constructor() public {  
+	totalSupply_ = 100000000000;
 	balances[msg.sender] = totalSupply_;
     }  
 
