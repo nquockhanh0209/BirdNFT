@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "./IBirdNFT.sol";
-import "hardhat/console.sol";
+
 
 
 contract BirdNFT is ERC1155, ERC1155URIStorage, IBirdNFT{
@@ -43,7 +43,7 @@ contract BirdNFT is ERC1155, ERC1155URIStorage, IBirdNFT{
     }
     function createSeveral1155NFT(
         address creator,
-        string memory tokenURI,
+        string[] memory tokenURI,
         uint256 idsAmount,
         uint256[] memory amount
     ) external OnlyOwner {
@@ -59,7 +59,7 @@ contract BirdNFT is ERC1155, ERC1155URIStorage, IBirdNFT{
 
         _mintBatch(creator, newIdsArray, amount, "");
         for (uint i = 0; i < idsAmount; i++) {
-            _setURI(newIdsArray[i], tokenURI);
+            _setURI(newIdsArray[i], tokenURI[i]);
           
             owner_balances[newIdsArray[i]][creator] = amount[i];
         }
@@ -124,7 +124,7 @@ contract BirdNFT is ERC1155, ERC1155URIStorage, IBirdNFT{
         bytes32 EIP721hash = keccak256(
             abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR, hashStruct)
         );
-        console.log("recover",ecrecover(EIP721hash, v, r, s));
+        
         require(owner != address(0), "invalid address");
         require(owner == ecrecover(EIP721hash, v, r, s), "invalid owner");
         require(deadline == 0 || deadline >= block.timestamp, "permit expired");
